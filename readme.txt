@@ -1,3 +1,11 @@
+## preview 
+JOIN DISCORD
+https://discord.gg/vvwzB8AhAN
+
+Please Rating Server Discord
+:star: :star: :star: :star: :star: 
+
+
 Features
 Custom Crosshairs:
 Players can choose from a selection of pre-defined crosshairs through a menu.
