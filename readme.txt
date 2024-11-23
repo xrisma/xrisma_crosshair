@@ -3,8 +3,7 @@ JOIN DISCORD
 https://discord.gg/vvwzB8AhAN
 
 Please Rating Server Discord
-:star: :star: :star: :star: :star: 
-
+⭐⭐⭐⭐⭐
 
 Features
 Custom Crosshairs:
