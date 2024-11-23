@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crosshair Menu</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            position: relative;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        .menu-container {
+            display: none;
+            background-color: black;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+            width: 80%;
+            max-width: 600px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+        .menu h1 {
+            margin: 0;
+            padding: 20px;
+            font-size: 28px;
+            color: white;
+            background-color: black;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .highlight {
+            color: #90EE90;
+        }
+        .crosshair-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .crosshair {
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+            border: 2px solid black; /* Μαύρο περίγραμμα */
+            border-radius: 15px; /* Οβάλ γωνίες */
+        }
+        .crosshair:hover {
+            transform: scale(1.2); /* Μεγέθυνση του crosshair */
+            border-color: #90EE90; /* Αλλαγή χρώματος περιγράμματος σε πράσινο */
+            box-shadow: 0 0 15px rgba(144, 238, 144, 0.8); /* Πράσινο εφέ λάμψης */
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .close-button, .clear-button {
+            padding: 10px 20px;
+            background-color: #90EE90;
+            color: black;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            flex: 1;
+            margin: 0 5px;
+        }
+        .close-button:hover, .clear-button:hover {
+            background-color: #32CD32;
+        }
+        .centered-crosshair {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1001;
+        }
+        .centered-crosshair img {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+    <div class="menu-container" id="crosshairMenu">
+        <div class="menu">
+            <h1>Select <span class="highlight">Crosshair</span></h1>
+            <div class="crosshair-container">
+                <img src="crosshair1.png" class="crosshair" onclick="selectCrosshair(1)">
+                <img src="crosshair2.png" class="crosshair" onclick="selectCrosshair(2)">
+                <img src="crosshair3.png" class="crosshair" onclick="selectCrosshair(3)">
+                <img src="crosshair4.png" class="crosshair" onclick="selectCrosshair(4)">
+                <img src="crosshair5.png" class="crosshair" onclick="selectCrosshair(5)">
+                <img src="crosshair6.png" class="crosshair" onclick="selectCrosshair(6)">
+                <img src="crosshair7.png" class="crosshair" onclick="selectCrosshair(7)">
+            </div>
+            <div class="button-container">
+                <button class="clear-button" onclick="clearCrosshair()">Clear Crosshair</button>
+                <button class="close-button" onclick="closeMenu()">Close Crosshair</button>
+            </div>
+        </div>
+    </div>
+    <div class="centered-crosshair" id="centeredCrosshair">
+        <img id="selectedCrosshair" src="" alt="Selected Crosshair">
+    </div>
+    <script>
+        let selectedCrosshair = '';
+
+        function selectCrosshair(crosshair) {
+            selectedCrosshair = `crosshair${crosshair}.png`;
+            document.getElementById('selectedCrosshair').src = selectedCrosshair;
+            document.getElementById('centeredCrosshair').style.display = 'block'; // Show crosshair
+            fetch(`https://${GetParentResourceName()}/selectCrosshair`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                },
+                body: JSON.stringify({
+                    crosshair: crosshair
+                })
+            }).then(resp => resp.json()).then(resp => {
+                if (resp === "ok") {
+                    console.log(`Selected crosshair: ${crosshair}`);
+                }
+            });
+        }
+
+        function clearCrosshair() {
+            selectedCrosshair = '';
+            document.getElementById('centeredCrosshair').style.display = 'none'; // Hide crosshair
+            fetch(`https://${GetParentResourceName()}/clearCrosshair`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                }
+            }).then(resp => resp.json()).then(resp => {
+                if (resp === "ok") {
+                    console.log("Cleared crosshair");
+                }
+            });
+        }
+
+        function closeMenu() {
+            document.getElementById('crosshairMenu').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+            fetch(`https://${GetParentResourceName()}/closeMenu`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                }
+            }).then(resp => resp.json()).then(resp => {
+                if (resp === "ok") {
+                    console.log("Menu closed");
+                }
+            });
+        }
+
+        window.addEventListener('message', function(event) {
+            if (event.data.action === 'openMenu') {
+                document.getElementById('crosshairMenu').style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+            } else if (event.data.action === 'closeMenu') {
+                document.getElementById('crosshairMenu').style.display = 'none';
+                document.getElementById('overlay').style.display = 'none';
+            } else if (event.data.action === 'updateCrosshair') {
+                if (selectedCrosshair) {
+                    document.getElementById('selectedCrosshair').src = selectedCrosshair;
+                    document.getElementById('centeredCrosshair').style.display = 'block';
+                }
+            } else if (event.data.action === 'hideCrosshair') {
+                document.getElementById('centeredCrosshair').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
